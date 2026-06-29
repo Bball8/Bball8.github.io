@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bball8 - Portfolio</title>
+    <meta name="description" content="Bball8 portfolio">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css?v=3">
+
+    <script type="importmap">
+    {
+        "imports": {
+            "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js"
+        }
+    }
+    </script>
+</head>
+<body>
+    <div class="bg-orbs" aria-hidden="true">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+        <div class="orb orb-3"></div>
+        <div class="orb orb-4"></div>
+        <div class="orb orb-5"></div>
+    </div>
+
+    <!-- NAV-->
+    <nav class="navbar" id="navbar">
+        <div class="nav-container">
+            <a href="#hero" class="nav-logo">Bball8<span class="logo-dot">.</span></a>
+            <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation menu" aria-expanded="false">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <ul class="nav-menu" id="navMenu">
+                <li><a href="#about" class="nav-link">About</a></li>
+                <li><a href="#timeline" class="nav-link">Experience</a></li>
+                <li><a href="#projects" class="nav-link">Projects</a></li>
+                <li><a href="#contact" class="nav-link">Contact</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- LAPTOP -->
+    <section id="hero" class="hero hero-three">
+        <canvas id="heroCanvas" aria-hidden="true"></canvas>
+
+        <div class="hero-3d-wrap reveal">
+            <div id="laptopScene" class="laptop-scene" aria-hidden="true"></div>
+        
+            <div id="screenCopy"
+                 class="screen-copy"
+                 data-logo="Bball8.dev"
+                 data-greeting="Hello, I'm"
+                 data-name="Bball8"
+                 data-description="Fully developing various fun & interesting projects."
+                 data-roles='["Fullstack Developer", "Software Engineer", "ML & AI Enthusiast"]'>
+            </div>
+
+            <div class="hero-fallback-copy">
+                <p class="hero-greeting">Hello, I'm</p>
+                <h1 class="hero-name">Bball8</h1>
+                <p class="hero-description">
+                    Fully developing various fun & interesting projects.
+                </p>
+                <div class="hero-cta">
+                    <a href="#projects" class="btn btn-primary">View Projects</a>
+                    <a href="#contact" class="btn btn-outline">Contact Me</a>
+                </div>
+            </div>
+
+        </div>
+
+        <a href="#about" class="scroll-cue" aria-label="Scroll to About section">
+            <span></span>
+        </a>
+    </section>
+
+    <!-- ABOUT -->
+    <section id="about" class="section">
+        <div class="container">
+            <h2 class="section-title reveal">
+                <span class="title-accent">//</span> About Me
+            </h2>
+            <div class="about-grid">
+                <div class="about-text glass-card reveal">
+                    <p>
+                        I'm a passionate fullstack developer with a deep interest in
+                        Machine Learning. I am extremely curious, so I like to explore multiple 
+                        domains such as frontend technologies, database architectures, cloud, automatization, containerisation, etc.
+                    </p>
+                    <p>
+                        I like to build complete projects from start to end, by testing and learning new tools, approached or languages.
+                    </p>
+                    <p>
+                        When I'm not developping, I am probably enjoying and testing new things as my curiosity goes beyond my computer.
+                        I love to try and learn new things, it can be anything starting with sports like basketball, soccer or volley, 
+                        passing by new languages to learn and be able to speak fluently, or totally new skills like mechanic repair or medical knowledge
+                    </p>
+                </div>
+                <div class="about-tech">
+                    <div class="tech-group reveal">
+                        <h3 class="tech-title">Languages</h3>
+                        <div class="tech-grid">
+                            <span class="tech-pill">Python</span>
+                            <span class="tech-pill">Java</span>
+                            <span class="tech-pill">C/C++</span>
+                            <span class="tech-pill">C#</span>
+                            <span class="tech-pill">JavaScript</span>
+                            <span class="tech-pill">TypeScript</span>
+                            <span class="tech-pill">Scala</span>
+                            <span class="tech-pill">SQL</span>
+                            <span class="tech-pill">CUDA</span>
+                            <span class="tech-pill">Common Lisp</span>
+                            <span class="tech-pill">Smalltalk</span>
+                            <span class="tech-pill">LaTeX</span>
+                        </div>
+                    </div>
+
+                    <div class="tech-group reveal">
+                        <h3 class="tech-title">Frameworks & Infrastructure</h3>
+                        <div class="tech-grid">
+                            <span class="tech-pill">React</span>
+                            <span class="tech-pill">Three.js</span>
+                            <span class="tech-pill">FastAPI</span>
+                            <span class="tech-pill">Spring Boot</span>
+                            <span class="tech-pill">.NET</span>
+                            <span class="tech-pill">PyTorch</span>
+                            <span class="tech-pill">TensorFlow</span>
+                            <span class="tech-pill">Docker</span>
+                            <span class="tech-pill">Git</span>
+                            <span class="tech-pill">Linux</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- EXPERIENCE -->
+    <section id="timeline" class="section">
+        <div class="container">
+            <h2 class="section-title reveal">
+                <span class="title-accent">//</span> Experience
+            </h2>
+            <div class="timeline">
+                <div class="timeline-item reveal-left">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-content glass-card">
+                        <span class="timeline-date">2026 — Present</span>
+                        <h3>Looking for a Job</h3>
+                        <p>
+                            Now that I completed my master, I am looking for an opportunity to develop my skills in a company.
+                        </p>
+                        <p>
+                            -
+                        </p>
+                        <p>
+                            If you landed on this portfolio and found it interesting, do not hesitate to contact me with an offer !
+                        </p>
+                    </div>
+                </div>
+
+                <div class="timeline-item reveal-right">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-content glass-card">
+                        <span class="timeline-date">2025 — 2026</span>
+                        <h3>Master - Software Engineering</h3>
+                        <h4>VUB - Vrije Universiteit Brussel</h4>
+                        <p>
+                            During the courses at the VUB, I chose to focus on software engineering. I took several classes like "Software engineering", 
+                            "Advanced Topics in Software Engineering", "Software Architectures" or "Software Quality Analysis".
+                        </p>
+                        <p>
+                         -
+                        </p>
+                        <p>
+                            This helped a lot in order to improve my programming skills, especially for the infrastructure and code quality.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="timeline-item reveal-left">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-content glass-card">
+                        <span class="timeline-date">2024 — 2026</span>
+                        <h3>Master - Computer Science</h3>
+                        <h4>ULB - Université Libre de Bruxelles</h4>
+                        <p>
+                            After my bachelor, I decided to keep studying in order to improve my skills. As the bachelor was more general, 
+                            I focused on the "Software and critical systems" and the "Artifical Intellingence" aspects.
+                        </p>
+                        <p>
+                            -
+                        </p>
+                        <p>
+                            This was extremely helpful and greatly improved my skill thanks to diverse projects and theoretical courses. I also had the chance to make an incredibly interesting research for my Master Thesis, 
+                            which targets the machine learning aspect, that can be found in the experience section.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="timeline-item reveal-right">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-content glass-card">
+                        <span class="timeline-date">2021 — 2024</span>
+                        <h3>Bachelor - Computer Science</h3>
+                        <h4>ULB - Université Libre de Bruxelles</h4>
+                        <p>
+                            This is where I learnt and acquired the foundation of my programming skills. It taught me all the basics, and developed them in 3 years during which I took a huge interest in Machine Learning and AI.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- PROJECTS -->
+    <section id="projects" class="section">
+        <div class="container container-wide">
+            <h2 class="section-title reveal">
+                <span class="title-accent">//</span> Projects
+            </h2>
+            <div class="projects-grid">
+                <div class="project-card glass-card reveal">
+                    <div class="project-img project-img-1"></div>
+                    <div class="project-body">
+                        <div class="project-header">
+                            <i class="fas fa-brain project-icon"></i>
+                            <a href="https://github.com/yourusername/project-1" target="_blank" rel="noopener noreferrer" class="project-link" aria-label="View on GitHub">
+                                <i class="fab fa-github"></i>
+                            </a>
+                        </div>
+                        <h3 class="project-title">Neural Style Transfer</h3>
+                        <p class="project-desc">
+                            A deep learning application that applies artistic styles
+                            to images using convolutional neural networks and
+                            transfer learning techniques.
+                        </p>
+                        <div class="project-tags">
+                            <span>Python</span>
+                            <span>PyTorch</span>
+                            <span>CNN</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="project-card glass-card reveal">
+                    <div class="project-img project-img-2"></div>
+                    <div class="project-body">
+                        <div class="project-header">
+                            <i class="fas fa-chart-line project-icon"></i>
+                            <a href="https://github.com/yourusername/project-2" target="_blank" rel="noopener noreferrer" class="project-link" aria-label="View on GitHub">
+                                <i class="fab fa-github"></i>
+                            </a>
+                        </div>
+                        <h3 class="project-title">Real-Time Dashboard</h3>
+                        <p class="project-desc">
+                            An interactive analytics dashboard with live data
+                            visualization, filtering, and responsive charts built
+                            with React and D3.js.
+                        </p>
+                        <div class="project-tags">
+                            <span>React</span>
+                            <span>D3.js</span>
+                            <span>WebSocket</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="project-card glass-card reveal">
+                    <div class="project-img project-img-3"></div>
+                    <div class="project-body">
+                        <div class="project-header">
+                            <i class="fas fa-database project-icon"></i>
+                            <a href="https://github.com/yourusername/project-3" target="_blank" rel="noopener noreferrer" class="project-link" aria-label="View on GitHub">
+                                <i class="fab fa-github"></i>
+                            </a>
+                        </div>
+                        <h3 class="project-title">Query Optimizer</h3>
+                        <p class="project-desc">
+                            A SQL query optimization tool that analyzes execution
+                            plans, suggests index improvements, and benchmarks
+                            performance across databases.
+                        </p>
+                        <div class="project-tags">
+                            <span>PostgreSQL</span>
+                            <span>Python</span>
+                            <span>FastAPI</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="project-card glass-card reveal">
+                    <div class="project-img project-img-4"></div>
+                    <div class="project-body">
+                        <div class="project-header">
+                            <i class="fas fa-robot project-icon"></i>
+                            <a href="https://github.com/yourusername/project-4" target="_blank" rel="noopener noreferrer" class="project-link" aria-label="View on GitHub">
+                                <i class="fab fa-github"></i>
+                            </a>
+                        </div>
+                        <h3 class="project-title">Chatbot Framework</h3>
+                        <p class="project-desc">
+                            A modular NLP-powered chatbot framework with intent
+                            recognition, entity extraction, and multi-language
+                            support out of the box.
+                        </p>
+                        <div class="project-tags">
+                            <span>Python</span>
+                            <span>TensorFlow</span>
+                            <span>NLP</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="project-card glass-card reveal">
+                    <div class="project-img project-img-5"></div>
+                    <div class="project-body">
+                        <div class="project-header">
+                            <i class="fas fa-code project-icon"></i>
+                            <a href="https://github.com/yourusername/project-5" target="_blank" rel="noopener noreferrer" class="project-link" aria-label="View on GitHub">
+                                <i class="fab fa-github"></i>
+                            </a>
+                        </div>
+                        <h3 class="project-title">Component Library</h3>
+                        <p class="project-desc">
+                            A reusable UI component library built with React and
+                            TypeScript, featuring theming, accessibility-first
+                            design, and full documentation.
+                        </p>
+                        <div class="project-tags">
+                            <span>React</span>
+                            <span>TypeScript</span>
+                            <span>Storybook</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="project-card glass-card reveal">
+                    <div class="project-img project-img-6"></div>
+                    <div class="project-body">
+                        <div class="project-header">
+                            <i class="fas fa-server project-icon"></i>
+                            <a href="https://github.com/yourusername/project-6" target="_blank" rel="noopener noreferrer" class="project-link" aria-label="View on GitHub">
+                                <i class="fab fa-github"></i>
+                            </a>
+                        </div>
+                        <h3 class="project-title">API Gateway</h3>
+                        <p class="project-desc">
+                            A lightweight API gateway with rate limiting,
+                            authentication, request routing, and real-time
+                            monitoring built on Node.js and Redis.
+                        </p>
+                        <div class="project-tags">
+                            <span>Node.js</span>
+                            <span>Redis</span>
+                            <span>Docker</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CONTACT -->
+    <section id="contact" class="section">
+        <div class="container">
+            <h2 class="section-title reveal">
+                <span class="title-accent">//</span> Get In Touch
+            </h2>
+            <div class="contact-grid reveal">
+                <div class="contact-text">
+                    <p>
+                        I'm currently open to new opportunities and collaborations.
+                    </p>
+
+                    <p>
+                        Whether you have a job offer, a project in mind, a question, or just
+                        want to say hello my inbox is always open.
+                    </p>
+
+                    <p>
+                        My contacts are available right under, by clicking on the icons, and you can also contact me by filling in this form.
+                    </p>
+                    <div class="contact-socials">
+                        <a href="https://github.com/Bball8" target="_blank" rel="noopener noreferrer" aria-label="GitHub">
+                            <i class="fab fa-github"></i>
+                        </a>
+                        <a href="https://www.linkedin.com" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
+                            <i class="fab fa-linkedin-in"></i>
+                        </a>
+                        <a href="mailto:bball8.bc@gmail.com" aria-label="Email">
+                            <i class="fas fa-envelope"></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="contact-form glass-card">
+                    <div class="form-group">
+                        <input type="text" id="contactName" placeholder="Your Name" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="email" id="contactEmail" placeholder="Your Email" required>
+                    </div>
+                    <div class="form-group">
+                        <textarea id="contactMessage" rows="5" placeholder="Your Message" required></textarea>
+                    </div>
+                    <button type="button" class="btn btn-primary btn-full" id="contactBtn">
+                        Send Message
+                    </button>
+                    <p class="form-note" id="formNote" aria-live="polite"></p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="footer">
+        <div class="container">
+            <p>Designed & Built by <span class="footer-name">Bball8</span></p>
+            <p class="footer-year">&copy; 2026</p>
+        </div>
+    </footer>
+
+    <script type="module" src="script.js?v=3"></script>
+</body>
+</html>
