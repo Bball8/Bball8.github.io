@@ -6,7 +6,11 @@ const PAUSE_AFTER_TYPING = 1800;
 const PAUSE_AFTER_DELETING = 450;
 const CONTACT_EMAIL = "bball8.bc@gmail.com";
 
-const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+const FORCE_ANIMATIONS = true;
+
+const prefersReducedMotion =
+    !FORCE_ANIMATIONS &&
+    window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
 /* LAPTOP */
 /* Don't ask me how I made this work, I have no clue either (just need to change my broken monitor and keyboard ^^). But hey, it does work so I won't ever touch ig again ;D */

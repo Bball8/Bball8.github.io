@@ -1005,11 +1005,8 @@ body::before {
 
 /* REDUCED */
 @media (prefers-reduced-motion: reduce) {
-    *,
-    *::before,
-    *::after {
-        animation: none !important;
-        transition: none !important;
+    html {
+        scroll-behavior: auto;
     }
 
     .reveal,
@@ -1017,10 +1014,6 @@ body::before {
     .reveal-right {
         opacity: 1;
         transform: none;
-    }
-
-    html {
-        scroll-behavior: auto;
     }
 }
 
