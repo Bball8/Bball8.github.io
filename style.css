@@ -1103,12 +1103,17 @@ body::before {
     }
 
     .hero {
-        padding: 0 16px;
+        padding: 0;
         min-height: 100svh;
+        overflow: hidden;
     }
 
     .hero-3d-wrap {
+        width: 100vw;
+        max-width: none;
+        margin: 0;
         padding-top: 72px;
+        overflow: visible;
     }
 
     .hero-kicker {
@@ -1117,9 +1122,12 @@ body::before {
     }
 
     .laptop-scene {
-        width: 100vw;
+        position: relative;
+        width: 128vw;
         height: min(74vh, 560px);
-        margin-left: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        margin: 0;
     }
 
 
@@ -1177,6 +1185,7 @@ body::before {
     }
 
     .laptop-scene {
+        width: 142vw;
         height: 74vh;
     }
 
