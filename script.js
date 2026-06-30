@@ -151,22 +151,22 @@ const prefersReducedMotion =
     resize();
 
     function animate() {
-        const elapsed = clock.getElapsedTime();
+        const dt = Math.min(clock.getDelta(), 0.05);
+        const elapsed = clock.elapsedTime;
         const now = performance.now();
+        const smooth = 1 - Math.exp(-dt * 5.5);
 
         updateTypingState(screenData.roles, screenState, now);
         drawLaptopScreen(screenCtx, screenCanvas, screenData, screenState, now);
         screenTexture.needsUpdate = true;
 
-        if (!prefersReducedMotion) {
-            const openT = THREE.MathUtils.clamp((elapsed - OPEN_DELAY) / OPEN_DURATION, 0, 1);
-            lidGroup.rotation.x = THREE.MathUtils.lerp(CLOSED_ANGLE, OPEN_ANGLE, easeOutCubic(openT));
-            
-            laptop.position.y = Math.sin(elapsed * 1.15) * 0.045;
-            laptop.rotation.x += (target.rotX - laptop.rotation.x) * 0.075;
-            laptop.rotation.y += (target.rotY - laptop.rotation.y) * 0.075;
-            laptop.rotation.z += (target.rotZ - laptop.rotation.z) * 0.075;
-        }
+        const openT = THREE.MathUtils.clamp((elapsed - OPEN_DELAY) / OPEN_DURATION, 0, 1);
+        lidGroup.rotation.x = THREE.MathUtils.lerp(CLOSED_ANGLE, OPEN_ANGLE, easeOutCubic(openT));
+
+        laptop.position.y = Math.sin(elapsed * 1.15) * 0.045;
+        laptop.rotation.x += (target.rotX - laptop.rotation.x) * smooth;
+        laptop.rotation.y += (target.rotY - laptop.rotation.y) * smooth;
+        laptop.rotation.z += (target.rotZ - laptop.rotation.z) * smooth;
 
         camera.lookAt(CAMERA_TARGET);
         renderer.render(scene, camera);
