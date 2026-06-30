@@ -5,6 +5,7 @@ const DELETING_SPEED = 40;
 const PAUSE_AFTER_TYPING = 1800;
 const PAUSE_AFTER_DELETING = 450;
 const CONTACT_EMAIL = "bball8.bc@gmail.com";
+const PHONE_BREAKPOINT = 768;
 
 const FORCE_ANIMATIONS = true;
 
@@ -12,9 +13,9 @@ const prefersReducedMotion =
     !FORCE_ANIMATIONS &&
     window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-/* LAPTOP */
+/* LAPTOP and PHONE */
 /* Don't ask me how I made this work, I have no clue either (just need to change my broken monitor and keyboard ^^). But hey, it does work so I won't ever touch ig again ;D */
-(function initThreeLaptopHero() {
+(function initThreeDeviceHero() {
     const container = document.getElementById("laptopScene");
     const copy = document.getElementById("screenCopy");
     const fallback = document.querySelector(".hero-fallback-copy");
@@ -28,12 +29,14 @@ const prefersReducedMotion =
     }
 
     const screenData = getScreenData(copy);
+    const isPhoneHero = window.matchMedia(`(max-width: ${PHONE_BREAKPOINT}px)`).matches;
+    container.classList.toggle("phone-scene", isPhoneHero);
 
     const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(39, 1, 0.1, 100);
-    camera.position.set(0, 1.65, 7.45);
+    const camera = new THREE.PerspectiveCamera(isPhoneHero ? 34 : 39, 1, 0.1, 100);
+    camera.position.set(0, isPhoneHero ? 0.18 : 1.65, isPhoneHero ? 7.45 : 7.45);
 
-    const CAMERA_TARGET = new THREE.Vector3(0, 1.05, 0.05);
+    const CAMERA_TARGET = new THREE.Vector3(0, isPhoneHero ? 0.02 : 1.05, isPhoneHero ? 0 : 0.05);
     const OPEN_DELAY = 0.85;
     const OPEN_DURATION = 2.65;
 
@@ -55,12 +58,15 @@ const prefersReducedMotion =
     const pointer = new THREE.Vector2();
 
     const screenCanvas = document.createElement("canvas");
-    screenCanvas.width = 1600;
-    screenCanvas.height = 900;
+    screenCanvas.width = isPhoneHero ? 900 : 1600;
+    screenCanvas.height = isPhoneHero ? 1800 : 900;
     const screenCtx = screenCanvas.getContext("2d");
     const screenTexture = new THREE.CanvasTexture(screenCanvas);
     screenTexture.colorSpace = THREE.SRGBColorSpace;
     screenTexture.anisotropy = renderer.capabilities.getMaxAnisotropy();
+    screenTexture.generateMipmaps = false;
+    screenTexture.minFilter = THREE.LinearFilter;
+    screenTexture.magFilter = THREE.LinearFilter;
 
     const screenState = {
         phraseIndex: 0,
@@ -70,23 +76,28 @@ const prefersReducedMotion =
         typedRole: "",
         hoverAction: null,
         buttonHitAreas: [],
+        textureWidth: screenCanvas.width,
+        textureHeight: screenCanvas.height,
     };
 
     const laptop = new THREE.Group();
-    laptop.rotation.x = -0.045;
+    const BASE_ROT_X = isPhoneHero ? -0.04 : -0.045;
+    laptop.rotation.x = BASE_ROT_X;
     scene.add(laptop);
-    laptop.scale.set(1.1, 1.1, 1.1);
-    laptop.position.set(0, 0, 0);
+    laptop.scale.setScalar(isPhoneHero ? 0.92 : 1.1);
+    laptop.position.set(0, isPhoneHero ? 0.02 : 0, 0);
 
     const materials = createMaterials();
-    const { lidGroup, screenMesh } = buildLaptop(laptop, materials, screenTexture);
+    const { lidGroup, screenMesh, screenGlow } = isPhoneHero
+        ? buildPhone(laptop, materials, screenTexture)
+        : buildLaptop(laptop, materials, screenTexture);
 
     const shadow = new THREE.Mesh(
-        new THREE.PlaneGeometry(8.5, 5.6),
-        new THREE.ShadowMaterial({ opacity: 0.24 })
+        new THREE.PlaneGeometry(isPhoneHero ? 2.55 : 8.5, isPhoneHero ? 1.45 : 5.6),
+        new THREE.ShadowMaterial({ opacity: isPhoneHero ? 0.18 : 0.24 })
     );
     shadow.rotation.x = -Math.PI / 2;
-    shadow.position.set(0, -0.17, 0.55);
+    shadow.position.set(0, isPhoneHero ? -2.2 : -0.17, isPhoneHero ? 0.16 : 0.55);
     shadow.receiveShadow = true;
     scene.add(shadow);
 
@@ -94,7 +105,9 @@ const prefersReducedMotion =
 
     const CLOSED_ANGLE = 1.36;
     const OPEN_ANGLE = -0.28;
-    lidGroup.rotation.x = prefersReducedMotion ? OPEN_ANGLE : CLOSED_ANGLE;
+    if (!isPhoneHero) {
+        lidGroup.rotation.x = prefersReducedMotion ? OPEN_ANGLE : CLOSED_ANGLE;
+    }
 
     const target = {
         rotX: laptop.rotation.x,
@@ -109,9 +122,9 @@ const prefersReducedMotion =
         const x = (event.clientX - rect.left) / rect.width - 0.5;
         const y = (event.clientY - rect.top) / rect.height - 0.5;
 
-        target.rotY = x * 0.28;
-        target.rotX = -0.045 + y * 0.12;
-        target.rotZ = -x * 0.035;
+        target.rotY = x * (isPhoneHero ? 0.42 : 0.28);
+        target.rotX = BASE_ROT_X + y * (isPhoneHero ? 0.16 : 0.12);
+        target.rotZ = -x * (isPhoneHero ? 0.08 : 0.035);
 
         const action = getScreenActionFromPointer(event, rect, renderer, camera, raycaster, pointer, screenMesh, screenState);
         screenState.hoverAction = action;
@@ -121,7 +134,7 @@ const prefersReducedMotion =
     container.addEventListener("pointerleave", () => {
         screenState.hoverAction = null;
         renderer.domElement.style.cursor = "default";
-        target.rotX = -0.045;
+        target.rotX = BASE_ROT_X;
         target.rotY = 0;
         target.rotZ = 0;
     });
@@ -156,14 +169,34 @@ const prefersReducedMotion =
         const now = performance.now();
         const smooth = 1 - Math.exp(-dt * 5.5);
 
-        updateTypingState(screenData.roles, screenState, now);
-        drawLaptopScreen(screenCtx, screenCanvas, screenData, screenState, now);
+        const phoneBootProgress = isPhoneHero ? getPhoneBootProgress(elapsed) : 1;
+        const phonePressAmount = isPhoneHero ? getPhonePressAmount(elapsed) : 0;
+
+        if (!isPhoneHero || phoneBootProgress > 0.72) {
+            updateTypingState(screenData.roles, screenState, now);
+        }
+
+        if (isPhoneHero) {
+            drawPhoneScreen(screenCtx, screenCanvas, screenData, screenState, now, phoneBootProgress);
+        } else {
+            drawLaptopScreen(screenCtx, screenCanvas, screenData, screenState, now);
+        }
         screenTexture.needsUpdate = true;
 
-        const openT = THREE.MathUtils.clamp((elapsed - OPEN_DELAY) / OPEN_DURATION, 0, 1);
-        lidGroup.rotation.x = THREE.MathUtils.lerp(CLOSED_ANGLE, OPEN_ANGLE, easeOutCubic(openT));
+        if (isPhoneHero && screenGlow) {
+            screenGlow.material.opacity = (0.02 + phoneBootProgress * 0.14 + Math.sin(elapsed * 2.4) * 0.01 * phoneBootProgress);
+        }
 
-        laptop.position.y = Math.sin(elapsed * 1.15) * 0.045;
+        if (!isPhoneHero) {
+            const openT = THREE.MathUtils.clamp((elapsed - OPEN_DELAY) / OPEN_DURATION, 0, 1);
+            lidGroup.rotation.x = THREE.MathUtils.lerp(CLOSED_ANGLE, OPEN_ANGLE, easeOutCubic(openT));
+        }
+
+        const baseScale = isPhoneHero ? 0.92 : 1.1;
+        const phonePressScale = isPhoneHero ? getPhonePressAmount(elapsed) : 0;
+        laptop.scale.setScalar(baseScale - phonePressScale * 0.026);
+
+        laptop.position.y = (isPhoneHero ? 0.02 : 0) + Math.sin(elapsed * (isPhoneHero ? 1.02 : 1.15)) * (isPhoneHero ? 0.045 : 0.045) - phonePressScale * 0.035;
         laptop.rotation.x += (target.rotX - laptop.rotation.x) * smooth;
         laptop.rotation.y += (target.rotY - laptop.rotation.y) * smooth;
         laptop.rotation.z += (target.rotZ - laptop.rotation.z) * smooth;
@@ -255,6 +288,7 @@ function buildLaptop(root, materials, screenTexture) {
         new THREE.MeshBasicMaterial({
             map: screenTexture,
             toneMapped: false,
+            depthWrite: false,
         })
     );
     screenMesh.position.set(0, (SCREEN_H + 0.48) / 2 + 0.02, LID_THICKNESS / 2 + 0.012);
@@ -287,6 +321,133 @@ function buildLaptop(root, materials, screenTexture) {
     root.add(underGlow);
 
     return { lidGroup, screenMesh };
+}
+
+
+function buildPhone(root, materials, screenTexture) {
+    const BODY_W = 2.12;
+    const BODY_H = 4.34;
+    const BODY_D = 0.18;
+    const SCREEN_W = 1.82;
+    const SCREEN_H = 3.64;
+
+    const phoneBody = new THREE.Mesh(
+        roundedRectExtrudeGeometry(BODY_W, BODY_H, BODY_D, 0.24, 0.035),
+        materials.lid
+    );
+    phoneBody.castShadow = true;
+    phoneBody.receiveShadow = true;
+    root.add(phoneBody);
+    root.add(edgeLines(phoneBody, 0x8d79c9, 0.22));
+
+    const glass = new THREE.Mesh(
+        roundedRectExtrudeGeometry(SCREEN_W + 0.13, SCREEN_H + 0.13, 0.022, 0.2, 0.012),
+        new THREE.MeshPhysicalMaterial({
+            color: 0x090814,
+            metalness: 0.08,
+            roughness: 0.18,
+            clearcoat: 1,
+            clearcoatRoughness: 0.08,
+        })
+    );
+    glass.position.set(0, -0.025, BODY_D / 2 + 0.008);
+    glass.castShadow = true;
+    glass.receiveShadow = true;
+    root.add(glass);
+
+    const screenGlow = new THREE.Mesh(
+        new THREE.PlaneGeometry(SCREEN_W + 0.08, SCREEN_H + 0.08),
+        materials.screenGlow
+    );
+    screenGlow.position.set(0, -0.025, BODY_D / 2 + 0.038);
+    screenGlow.renderOrder = 1;
+    root.add(screenGlow);
+
+    const screenMesh = new THREE.Mesh(
+        new THREE.PlaneGeometry(SCREEN_W, SCREEN_H),
+        new THREE.MeshBasicMaterial({
+            map: screenTexture,
+            toneMapped: false,
+        })
+    );
+    screenMesh.position.set(0, -0.025, BODY_D / 2 + 0.056);
+    screenMesh.renderOrder = 2;
+    screenMesh.material.depthWrite = false;
+    root.add(screenMesh);
+
+    const island = new THREE.Mesh(
+        roundedRectExtrudeGeometry(0.48, 0.13, 0.018, 0.065, 0.004),
+        new THREE.MeshBasicMaterial({ color: 0x02030a })
+    );
+    island.position.set(0, 1.72, BODY_D / 2 + 0.082);
+    root.add(island);
+
+    const cameraDot = new THREE.Mesh(
+        new THREE.CircleGeometry(0.022, 24),
+        new THREE.MeshBasicMaterial({ color: 0x101827 })
+    );
+    cameraDot.position.set(0.16, 1.72, BODY_D / 2 + 0.094);
+    root.add(cameraDot);
+
+    const homeLine = new THREE.Mesh(
+        roundedRectExtrudeGeometry(0.48, 0.035, 0.012, 0.018, 0.004),
+        new THREE.MeshBasicMaterial({
+            color: 0xffffff,
+            transparent: true,
+            opacity: 0.42,
+        })
+    );
+    homeLine.position.set(0, -1.82, BODY_D / 2 + 0.082);
+    root.add(homeLine);
+
+    const sideButtonMaterial = materials.baseLip;
+    const sideButtons = [
+        { x: -BODY_W / 2 - 0.035, y: 0.96, h: 0.42 },
+        { x: -BODY_W / 2 - 0.035, y: 0.46, h: 0.34 },
+        { x: BODY_W / 2 + 0.035, y: 0.68, h: 0.58 },
+    ];
+
+    sideButtons.forEach((button) => {
+        const sideButton = new THREE.Mesh(
+            new THREE.BoxGeometry(0.045, button.h, 0.08),
+            sideButtonMaterial
+        );
+        sideButton.position.set(button.x, button.y, 0.01);
+        sideButton.castShadow = true;
+        sideButton.receiveShadow = true;
+        root.add(sideButton);
+    });
+
+    return { lidGroup: root, screenMesh, screenGlow };
+}
+
+function roundedRectExtrudeGeometry(width, height, depth, radius, bevelSize = 0.02) {
+    const x = -width / 2;
+    const y = -height / 2;
+    const r = Math.min(radius, width / 2, height / 2);
+
+    const shape = new THREE.Shape();
+    shape.moveTo(x + r, y);
+    shape.lineTo(x + width - r, y);
+    shape.quadraticCurveTo(x + width, y, x + width, y + r);
+    shape.lineTo(x + width, y + height - r);
+    shape.quadraticCurveTo(x + width, y + height, x + width - r, y + height);
+    shape.lineTo(x + r, y + height);
+    shape.quadraticCurveTo(x, y + height, x, y + height - r);
+    shape.lineTo(x, y + r);
+    shape.quadraticCurveTo(x, y, x + r, y);
+
+    const geometry = new THREE.ExtrudeGeometry(shape, {
+        depth,
+        bevelEnabled: true,
+        bevelSegments: 8,
+        bevelSize,
+        bevelThickness: bevelSize,
+        curveSegments: 16,
+    });
+    geometry.translate(0, 0, -depth / 2);
+    geometry.computeVertexNormals();
+    return geometry;
 }
 
 function createMaterials() {
@@ -658,6 +819,163 @@ function drawLaptopScreen(ctx, canvas, data, state, now) {
     ctx.fillRect(0, 0, w, h);
 }
 
+
+function drawPhoneScreen(ctx, canvas, data, state, now, bootProgress = 1) {
+    const w = canvas.width;
+    const h = canvas.height;
+    const pulse = (Math.sin(now / 760) + 1) / 2;
+
+    ctx.clearRect(0, 0, w, h);
+
+    const bg = ctx.createLinearGradient(0, 0, w, h);
+    bg.addColorStop(0, "#070817");
+    bg.addColorStop(0.45, "#0b0720");
+    bg.addColorStop(1, "#020617");
+    ctx.fillStyle = bg;
+    ctx.fillRect(0, 0, w, h);
+
+    drawRadial(ctx, w * 0.18, h * 0.15, 430, `rgba(139, 92, 246, ${0.28 + pulse * 0.05})`);
+    drawRadial(ctx, w * 0.85, h * 0.34, 360, "rgba(6, 182, 212, 0.18)");
+    drawRadial(ctx, w * 0.52, h * 0.95, 520, "rgba(168, 85, 247, 0.16)");
+
+    drawPhoneChrome(ctx, w, h, data.logo);
+    drawPhoneCodeCards(ctx, w, h, now);
+
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+
+    ctx.font = "500 34px 'JetBrains Mono', monospace";
+    ctx.fillStyle = "#8b5cf6";
+    ctx.fillText(data.greeting, w / 2, 382);
+
+    ctx.font = "700 126px 'Space Grotesk', 'Inter', sans-serif";
+    const nameGradient = ctx.createLinearGradient(w / 2 - 250, 0, w / 2 + 250, 0);
+    nameGradient.addColorStop(0, "#f4ecff");
+    nameGradient.addColorStop(0.52, "#a78bfa");
+    nameGradient.addColorStop(1, "#06b6d4");
+    ctx.fillStyle = nameGradient;
+    ctx.shadowColor = "rgba(139, 92, 246, 0.28)";
+    ctx.shadowBlur = 22;
+    ctx.fillText(data.name, w / 2, 520);
+    ctx.shadowBlur = 0;
+
+    ctx.font = "500 33px 'JetBrains Mono', monospace";
+    ctx.fillStyle = "#06b6d4";
+    const cursor = Math.floor(now / 520) % 2 === 0 ? " |" : "  ";
+    wrapText(ctx, state.typedRole + cursor, w / 2, 662, 720, 45);
+
+    ctx.font = "400 34px 'Inter', sans-serif";
+    ctx.fillStyle = "rgba(240, 230, 255, 0.74)";
+    wrapText(ctx, data.description, w / 2, 790, 690, 48);
+
+    state.buttonHitAreas = [];
+    const primary = drawScreenButton(ctx, w / 2 - 310, 1010, 620, 88, "View Projects", true, state.hoverAction === "projects");
+    const secondary = drawScreenButton(ctx, w / 2 - 310, 1126, 620, 88, "Contact Me", false, state.hoverAction === "contact");
+    state.buttonHitAreas.push({ ...primary, action: "projects" });
+    state.buttonHitAreas.push({ ...secondary, action: "contact" });
+
+    const vignette = ctx.createRadialGradient(w / 2, h / 2, 320, w / 2, h / 2, 1020);
+    vignette.addColorStop(0, "rgba(0,0,0,0)");
+    vignette.addColorStop(1, "rgba(0,0,0,0.44)");
+    ctx.fillStyle = vignette;
+    ctx.fillRect(0, 0, w, h);
+
+    drawPhoneBootOverlay(ctx, w, h, bootProgress);
+}
+
+
+function drawPhoneBootOverlay(ctx, w, h, progress) {
+    const p = clamp01(progress);
+    if (p >= 0.995) return;
+
+    ctx.save();
+
+    ctx.fillStyle = `rgba(2, 3, 10, ${1 - p})`;
+    ctx.fillRect(0, 0, w, h);
+
+    if (p > 0.02) {
+        const bloom = smoothStep(p / 0.72);
+        const radius = 90 + bloom * 760;
+        const glow = ctx.createRadialGradient(w / 2, h / 2, 0, w / 2, h / 2, radius);
+        glow.addColorStop(0, `rgba(139, 92, 246, ${0.42 * (1 - p) + 0.08})`);
+        glow.addColorStop(0.45, `rgba(6, 182, 212, ${0.22 * (1 - p)})`);
+        glow.addColorStop(1, "rgba(0, 0, 0, 0)");
+        ctx.fillStyle = glow;
+        ctx.fillRect(0, 0, w, h);
+    }
+    
+    if (p > 0.18 && p < 0.9) {
+        const sweep = smoothStep((p - 0.18) / 0.72);
+        const y = sweep * h;
+        const sweepGradient = ctx.createLinearGradient(0, y - 110, 0, y + 110);
+        sweepGradient.addColorStop(0, "rgba(139, 92, 246, 0)");
+        sweepGradient.addColorStop(0.48, `rgba(167, 139, 250, ${0.18 * (1 - sweep)})`);
+        sweepGradient.addColorStop(0.5, `rgba(6, 182, 212, ${0.20 * (1 - sweep)})`);
+        sweepGradient.addColorStop(0.52, `rgba(167, 139, 250, ${0.18 * (1 - sweep)})`);
+        sweepGradient.addColorStop(1, "rgba(139, 92, 246, 0)");
+        ctx.fillStyle = sweepGradient;
+        ctx.fillRect(0, Math.max(0, y - 130), w, 260);
+    }
+
+    ctx.restore();
+}
+
+function drawPhoneChrome(ctx, w, h, logo) {
+    ctx.save();
+
+    ctx.font = "600 22px 'JetBrains Mono', monospace";
+    ctx.fillStyle = "rgba(240, 230, 255, 0.7)";
+    ctx.textAlign = "left";
+    ctx.fillText("9:41", 76, 82);
+
+    ctx.textAlign = "right";
+    ctx.fillStyle = "rgba(6, 182, 212, 0.82)";
+    ctx.fillText(logo, w - 76, 82);
+
+    roundRect(ctx, 70, 142, w - 140, 74, 26);
+    ctx.fillStyle = "rgba(255, 255, 255, 0.055)";
+    ctx.fill();
+    ctx.strokeStyle = "rgba(255, 255, 255, 0.08)";
+    ctx.lineWidth = 2;
+    ctx.stroke();
+
+    ctx.font = "500 24px 'JetBrains Mono', monospace";
+    ctx.fillStyle = "rgba(240, 230, 255, 0.62)";
+    ctx.textAlign = "center";
+    ctx.fillText("portfolio.hero.tsx", w / 2, 181);
+
+    ctx.restore();
+}
+
+function drawPhoneCodeCards(ctx, w, h, now) {
+    ctx.save();
+    ctx.globalAlpha = 0.44;
+
+    const cards = [
+        { x: 92, y: 1280, width: 300, accent: "rgba(139, 92, 246," },
+        { x: 508, y: 1280, width: 300, accent: "rgba(6, 182, 212," },
+        { x: 184, y: 1455, width: 532, accent: "rgba(167, 139, 250," },
+    ];
+
+    cards.forEach((card, index) => {
+        roundRect(ctx, card.x, card.y, card.width, 108, 24);
+        ctx.fillStyle = "rgba(255, 255, 255, 0.038)";
+        ctx.fill();
+        ctx.strokeStyle = "rgba(255, 255, 255, 0.07)";
+        ctx.lineWidth = 2;
+        ctx.stroke();
+
+        for (let i = 0; i < 3; i++) {
+            const alpha = 0.12 + Math.sin(now / 650 + index + i) * 0.035;
+            ctx.fillStyle = `${card.accent} ${alpha})`;
+            roundRect(ctx, card.x + 28, card.y + 28 + i * 22, card.width - 90 - i * 34, 8, 4);
+            ctx.fill();
+        }
+    });
+
+    ctx.restore();
+}
+
 function drawTerminalChrome(ctx, w, logo) {
     ctx.save();
     ctx.globalAlpha = 0.92;
@@ -803,8 +1121,10 @@ function getScreenActionFromPointer(event, rect, renderer, camera, raycaster, po
     if (!hits.length || !hits[0].uv) return null;
 
     const uv = hits[0].uv;
-    const x = uv.x * 1600;
-    const y = (1 - uv.y) * 900;
+    const textureWidth = state.textureWidth || 1600;
+    const textureHeight = state.textureHeight || 900;
+    const x = uv.x * textureWidth;
+    const y = (1 - uv.y) * textureHeight;
 
     const area = state.buttonHitAreas.find((button) =>
         x >= button.x &&
@@ -843,6 +1163,26 @@ function isWebGLAvailable() {
     } catch {
         return false;
     }
+}
+
+
+function clamp01(value) {
+    return Math.max(0, Math.min(1, value));
+}
+
+function smoothStep(value) {
+    const t = clamp01(value);
+    return t * t * (3 - 2 * t);
+}
+
+function getPhoneBootProgress(elapsed) {
+    return smoothStep((elapsed - 0.72) / 1.05);
+}
+
+function getPhonePressAmount(elapsed) {
+    const pressIn = smoothStep((elapsed - 0.34) / 0.14);
+    const pressOut = smoothStep((elapsed - 0.54) / 0.24);
+    return Math.max(0, pressIn - pressOut);
 }
 
 function easeOutCubic(t) {
